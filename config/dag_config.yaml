@@ -1,0 +1,40 @@
+# Configuration for the chem_pipeline DAG.
+# Loaded once at DAG-parse time (keep this file cheap to read - no S3 calls here).
+
+aws_conn_id: "aws_default"
+
+s3:
+  bucket: "chem-pipeline-incoming"
+  # Prefix under which scientists drop <id>_scaffolds.csv / <id>_r_groups.csv
+  input_prefix: "incoming/"
+  # Where processed outputs (molecules, properties, clusters, predictions) land
+  output_prefix: "processed/"
+  scaffold_suffix: "_scaffolds.csv"
+  r_groups_suffix: "_r_groups.csv"
+
+clustering:
+  n_clusters: 8
+  fingerprint_radius: 2
+  fingerprint_n_bits: 2048
+  random_state: 42
+
+# Optional stages - off by default because chemprop/faerun are heavy deps.
+# Flip on once the extra libs (requirements-optional.txt) are installed on
+# the worker image/queue that runs these tasks.
+optional_stages:
+  enable_chemprop: false
+  chemprop_model_dir: "s3://chem-pipeline-models/chemprop/"
+  enable_faerun: false
+
+data_quality:
+  min_valid_smiles_ratio: 0.90    # fraction of rows that must produce a valid RDKit mol
+  max_duplicate_ratio: 0.20       # fraction of duplicate canonical SMILES allowed
+  max_missing_property_ratio: 0.02
+  molwt_range: [50, 1500]
+  logp_range: [-6, 10]
+
+notifications:
+  teams_conn_id: "ms_teams_webhook"
+  notify_on_success: true
+  notify_on_dq_failure: true
+  notify_on_dag_failure: true
