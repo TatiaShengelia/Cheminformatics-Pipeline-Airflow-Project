@@ -1,0 +1,7 @@
+# Optional dependencies for Step 4 (ChemProp prediction) and Step 5 (Faerun graph)
+# These are heavy / GPU-friendly libs kept out of the base Airflow image on purpose.
+# Install on a dedicated worker queue / KubernetesPodOperator image instead of the
+# scheduler image if possible.
+chemprop>=1.6.1
+faerun>=0.4.7
+tmap>=1.2.1
