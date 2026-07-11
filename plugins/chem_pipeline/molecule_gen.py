@@ -62,7 +62,7 @@ def enumerate_molecules_for_id(scaffold_smiles: str, r_group_smiles_list: Iterab
         return
 
     labels_sorted = sorted(by_label.keys())
-    for combo in itertools.product(*(by_label[l] for l in labels_sorted)):
+    for combo in itertools.product(*(by_label[label] for label in labels_sorted)):
         try:
             assembled = scaffold_mol
             for rg_smiles in combo:
