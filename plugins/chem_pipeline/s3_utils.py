@@ -15,7 +15,10 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import pandas as pd
-from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +31,7 @@ class DatasetPair:
     last_modified: Optional[str] = None
 
 
-def get_pair_for_id(hook: S3Hook, bucket: str, prefix: str, dataset_id: str,
+def get_pair_for_id(hook: "S3Hook", bucket: str, prefix: str, dataset_id: str,
                      scaffold_suffix: str, r_groups_suffix: str) -> DatasetPair:
     """Resolve the two expected object keys for a given dataset id and make
     sure both actually exist in the bucket."""

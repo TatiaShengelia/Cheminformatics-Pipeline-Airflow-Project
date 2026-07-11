@@ -18,9 +18,8 @@ _COLOR_WARN = "FFC107"
 _COLOR_FAIL = "DC3545"
 
 
-def _webhook_url(conn_id: str) -> str:
+def _webhook_url(conn_id: str) -> str | None:
     conn = BaseHook.get_connection(conn_id)
-    # Support either the connection's `host` or a `webhook_url` extra field.
     return conn.host or conn.extra_dejson.get("webhook_url")
 
 
@@ -30,7 +29,7 @@ def _post_card(conn_id: str, title: str, text: str, color: str, facts: list[tupl
         logger.warning("No MS Teams webhook URL configured for conn_id=%s; skipping notification", conn_id)
         return
 
-    card = {
+    card: dict = {
         "@type": "MessageCard",
         "@context": "http://schema.org/extensions",
         "themeColor": color,

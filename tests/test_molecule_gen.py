@@ -36,6 +36,14 @@ def _hook_with_no_existing_outputs():
     return hook
 
 
+def _hook_with_output_for(*dataset_ids):
+    hook = MagicMock()
+    hook.check_for_key.side_effect = lambda key, bucket_name: any(
+        key.startswith(f"processed/{ds}_") for ds in dataset_ids
+    )
+    return hook
+
+
 def test_filter_new_or_overwrite_respects_watermark():
     pairs = {
         "old_ds": DatasetPair("old_ds", "in/old_ds_scaffolds.csv", "in/old_ds_r_groups.csv",
@@ -43,7 +51,7 @@ def test_filter_new_or_overwrite_respects_watermark():
         "new_ds": DatasetPair("new_ds", "in/new_ds_scaffolds.csv", "in/new_ds_r_groups.csv",
                                last_modified="2026-06-01T00:00:00+00:00"),
     }
-    hook = _hook_with_no_existing_outputs()
+    hook = _hook_with_output_for("old_ds")  # old_ds already has output; new_ds doesn't
 
     selected = filter_new_or_overwrite(
         hook, pairs, bucket="b", output_prefix="processed/",
